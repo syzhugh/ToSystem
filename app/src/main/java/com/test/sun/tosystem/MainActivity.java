@@ -15,6 +15,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.test.sun.tosystem.utils.CheckRoot;
 import com.test.sun.tosystem.utils.Commands;
 import com.test.sun.tosystem.utils.FileRecords;
 
@@ -33,6 +34,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Button bt_root, bt_reboot, bt_select, bt_delall;
     private TextView tv_show;
 
+    private boolean rooted = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,6 +44,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         initView();
         initEvent();
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.i(TAG, "MainActivity:onResume----------------");
     }
 
     private void initView() {
@@ -85,7 +94,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         .create().show();
                 break;
             case R.id.main_bt_select:
-                getFile();
+                addToSystem();
                 break;
             case R.id.main_bt_delall:
                 removeFromSystem();
@@ -93,7 +102,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    private void getFile() {
+    private void addToSystem() {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.setType("*/*");
         intent.addCategory(Intent.CATEGORY_OPENABLE);

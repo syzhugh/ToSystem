@@ -4,6 +4,7 @@ import android.util.Log;
 
 import java.io.DataOutputStream;
 import java.io.File;
+import java.io.IOException;
 
 /**
  * Created by ZS27 on 2016/12/19.
@@ -117,6 +118,13 @@ public class Commands {
         } catch (Exception e) {
             Log.d("*** DEBUG ***", "ROOT REE" + e.getMessage());
             return false;
+        } finally {
+            if (process != null) process.destroy();
+            if (os != null) try {
+                os.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         return true;
     }
