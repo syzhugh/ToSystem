@@ -12,7 +12,9 @@ import java.io.File;
  */
 
 public class Commands {
-    public static final String APK_NAME = "app-debug.apk";
+
+    private static String SYSTEMSTATE_RW = "mount -o remount,rw /system";
+    private static String SYSTEMSTATE_RO = "mount -o remount,ro /system";
 
     /**
      * 应用程序运行命令获取 Root权限，设备必须获得ROOT权限
@@ -52,7 +54,6 @@ public class Commands {
         if (!file.exists()) {
             return false;
         }
-        String systemState = "mount -o remount /system";
         StringBuilder moveFile = new StringBuilder("cp -f ");
         moveFile.append(file.getAbsoluteFile());
         moveFile.append(" /system/app");
@@ -65,10 +66,11 @@ public class Commands {
         try {
             process = Runtime.getRuntime().exec("su");
             os = new DataOutputStream(process.getOutputStream());
-            os.writeBytes(systemState + "\n");
+            os.writeBytes(SYSTEMSTATE_RW + "\n");
             os.writeBytes(moveFile.toString() + "\n");
             os.writeBytes(chmod + "\n");
             os.writeBytes(chown + "\n");
+            os.writeBytes(SYSTEMSTATE_RO + "\n");
             os.writeBytes("exit\n");
             os.flush();
             process.waitFor();
@@ -79,9 +81,8 @@ public class Commands {
         return true;
     }
 
-    public static boolean delFromSystemApp(File file) {
-        String systemState = "mount -o remount /system";
-        String delFile = "rm /system/app/" + file.getName();
+    public static boolean delFromSystemApp(String name) {
+        String delFile = "rm /system/app/" + name;
 
         Process process = null;
         DataOutputStream os = null;
@@ -89,8 +90,9 @@ public class Commands {
         try {
             process = Runtime.getRuntime().exec("su");
             os = new DataOutputStream(process.getOutputStream());
-            os.writeBytes(systemState + "\n");
+            os.writeBytes(SYSTEMSTATE_RW + "\n");
             os.writeBytes(delFile + "\n");
+            os.writeBytes(SYSTEMSTATE_RO + "\n");
             os.writeBytes("exit\n");
             os.flush();
             process.waitFor();
